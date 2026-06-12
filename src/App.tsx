@@ -3,6 +3,7 @@ import { HomeScreen } from './components/screens/HomeScreen';
 import { RollFighterScreen } from './components/screens/RollFighterScreen';
 import { DrawScreen } from './components/screens/DrawScreen';
 import { TournamentHub } from './components/screens/TournamentHub';
+import { BracketScreen } from './components/screens/BracketScreen';
 
 export function App() {
   const { game } = useGame();
@@ -16,6 +17,12 @@ export function App() {
       return <DrawScreen />;
     case 'GROUP_STAGE':
       return <TournamentHub />;
+    case 'R16':
+    case 'QF':
+    case 'SF':
+    case 'BRONZE':
+    case 'FINAL':
+      return <BracketScreen />;
     case 'CHAMPION':
       return <Placeholder phase="CHAMPION" />;
     default:
