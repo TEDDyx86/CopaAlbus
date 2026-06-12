@@ -32,38 +32,38 @@ Fonte: `OVERALL ALBUS.txt`. 28 jogadores. Cada jogador tem **três atributos de 
 gerados de modo que a média bata com o overall que o grupo já definiu, com uma leve
 especialização por jogador. **Todos são editáveis** em `data/players.ts`.
 
-Ordenados por overall (define os potes do sorteio):
+Ordenados por overall (só para referência — o sorteio dos grupos é aleatório):
 
-| # | Jogador | Kill | Farm | Torre | OVR | Pote |
-|---|---------|------|------|-------|-----|------|
-| 1 | Boelitz | 99 | 99 | 99 | 99 | 1 |
-| 2 | Gilmar | 98 | 94 | 93 | 95 | 1 |
-| 3 | Jon | 89 | 90 | 94 | 91 | 1 |
-| 4 | Leozão | 94 | 89 | 87 | 90 | 1 |
-| 5 | Osni | 88 | 94 | 88 | 90 | 1 |
-| 6 | Ana Bueno | 87 | 88 | 92 | 89 | 1 |
-| 7 | Grein | 92 | 87 | 85 | 88 | 1 |
-| 8 | Giovani | 86 | 92 | 86 | 88 | 2 |
-| 9 | Teddy | 85 | 86 | 90 | 87 | 2 |
-| 10 | Bruno | 91 | 86 | 84 | 87 | 2 |
-| 11 | Kaminski | 84 | 90 | 84 | 86 | 2 |
-| 12 | Leo Magro | 84 | 85 | 89 | 86 | 2 |
-| 13 | Jackson | 89 | 84 | 82 | 85 | 2 |
-| 14 | Luis020 | 81 | 87 | 81 | 83 | 2 |
-| 15 | Pedro Rush | 88 | 81 | 80 | 83 | 3 |
-| 16 | Badasento | 80 | 81 | 85 | 82 | 3 |
-| 17 | Marquinho | 80 | 86 | 80 | 82 | 3 |
-| 18 | Jonata | 85 | 80 | 78 | 81 | 3 |
-| 19 | Le3 | 78 | 79 | 83 | 80 | 3 |
-| 20 | Victor Vbabao | 78 | 84 | 78 | 80 | 3 |
-| 21 | Vanzela | 84 | 79 | 77 | 80 | 3 |
-| 22 | Jao | 77 | 78 | 82 | 79 | 4 |
-| 23 | Thiago | 77 | 83 | 77 | 79 | 4 |
-| 24 | Bato | 82 | 77 | 75 | 78 | 4 |
-| 25 | Daniel | 75 | 76 | 80 | 77 | 4 |
-| 26 | Yan | 75 | 81 | 75 | 77 | 4 |
-| 27 | Augusto | 80 | 75 | 73 | 76 | 4 |
-| 28 | Tuco | 52 | 76 | 52 | 60 | 4 |
+| # | Jogador | Kill | Farm | Torre | OVR |
+|---|---------|------|------|-------|-----|
+| 1 | Boelitz | 99 | 99 | 99 | 99 |
+| 2 | Gilmar | 98 | 94 | 93 | 95 |
+| 3 | Jon | 89 | 90 | 94 | 91 |
+| 4 | Leozão | 94 | 89 | 87 | 90 |
+| 5 | Osni | 88 | 94 | 88 | 90 |
+| 6 | Ana Bueno | 87 | 88 | 92 | 89 |
+| 7 | Grein | 92 | 87 | 85 | 88 |
+| 8 | Giovani | 86 | 92 | 86 | 88 |
+| 9 | Teddy | 85 | 86 | 90 | 87 |
+| 10 | Bruno | 91 | 86 | 84 | 87 |
+| 11 | Kaminski | 84 | 90 | 84 | 86 |
+| 12 | Leo Magro | 84 | 85 | 89 | 86 |
+| 13 | Jackson | 89 | 84 | 82 | 85 |
+| 14 | Luis020 | 81 | 87 | 81 | 83 |
+| 15 | Pedro Rush | 88 | 81 | 80 | 83 |
+| 16 | Badasento | 80 | 81 | 85 | 82 |
+| 17 | Marquinho | 80 | 86 | 80 | 82 |
+| 18 | Jonata | 85 | 80 | 78 | 81 |
+| 19 | Le3 | 78 | 79 | 83 | 80 |
+| 20 | Victor Vbabao | 78 | 84 | 78 | 80 |
+| 21 | Vanzela | 84 | 79 | 77 | 80 |
+| 22 | Jao | 77 | 78 | 82 | 79 |
+| 23 | Thiago | 77 | 83 | 77 | 79 |
+| 24 | Bato | 82 | 77 | 75 | 78 |
+| 25 | Daniel | 75 | 76 | 80 | 77 |
+| 26 | Yan | 75 | 81 | 75 | 77 |
+| 27 | Augusto | 80 | 75 | 73 | 76 |
+| 28 | Tuco | 52 | 76 | 52 | 60 |
 
 (Tuco nasce "rato de farm": fraco no geral, mas com um farm respeitável — o tipo de
 perfil que pode aprontar uma zebra se o X1 virar maratona de CS. Tudo ajustável.)
@@ -79,7 +79,8 @@ Copa seja reproduzível e salvável. A seed é gerada ao criar a Copa e guardada
 
 A partida é resolvida em **dois passos**: primeiro escolhe-se a *frente* onde o X1 se
 decide (que vira a forma da vitória), depois quem vence **naquela frente**. São os três
-atributos que decidem tudo — o overall só serve pra potes/seeding/exibição.
+atributos que decidem tudo — o overall só serve para exibição e como critério de
+desempate (tabelas de grupo e ranking dos 3º lugares).
 
 ### Passo 1 — Em qual frente o X1 se decide (kill / farm / torre)
 
@@ -129,9 +130,9 @@ baixo/negativo = sufoco/zebra) — usado só para narrativa/UI.
 
 ### Sorteio (draw)
 
-- 4 potes de 7, por overall (ver tabela). 
-- 7 grupos (A–G) de 4, **um de cada pote por grupo**, com a posição dentro do pote
-  sorteada pelo PRNG. Grupos equilibrados, sem "grupo da morte" só de top.
+- **100% aleatório**: os 28 vão para um chapéu único e são embaralhados pelo PRNG.
+- 7 grupos (A–G) de 4, preenchidos na ordem do embaralhamento. Sem potes, sem
+  balanceamento — pode rolar grupo da morte e grupo de bobeira, e faz parte da graça.
 
 ### Fase de grupos
 
@@ -149,11 +150,10 @@ baixo/negativo = sufoco/zebra) — usado só para narrativa/UI.
 
 - 16 classificados → **Oitavas → Quartas → Semifinal → Final**.
 - **Disputa de 3º lugar:** os perdedores das semifinais jogam pelo bronze.
-- **Seeding do chaveamento:** os 16 são ranqueados por camada
-  (1ºs de grupo, depois 2ºs, depois melhores 3ºs), e dentro de cada camada por
-  pontos → overall. Esse ranking 1..16 monta um chaveamento semeado padrão
-  (1×16, 8×9, 5×12, 4×13, 3×14, 6×11, 7×10, 2×15). Regra de cortesia: se nas oitavas
-  cair um reencontro de mesmo grupo, aplica-se uma troca determinística para evitar.
+- **Chaveamento sorteado:** os 16 classificados são embaralhados pelo PRNG e
+  distribuídos nas oitavas — sem seeding por força. Única restrição (estilo sorteio de
+  mata-mata): evitar reencontro de quem caiu no **mesmo grupo** logo nas oitavas; se o
+  embaralhamento gerar esse choque, troca-se de forma determinística para desfazer.
 - Confronto único em cada fase do mata-mata (não é melhor de N).
 
 ## Fluxo de telas
@@ -210,7 +210,7 @@ Módulos isolados, com fronteiras claras e testáveis:
 - localStorage indisponível ou corrompido → começa do zero sem quebrar (try/catch).
 - Empates triplos no grupo → cadeia de desempate aplicada na ordem definida; PRNG
   garante resolução final determinística.
-- Reencontro de mesmo grupo nas oitavas → regra de troca determinística no seeding.
+- Reencontro de mesmo grupo nas oitavas → troca determinística no sorteio do chaveamento.
 - Estado salvo de versão antiga/incompatível → descarta e reinicia a run.
 
 ## Testes (Vitest)
@@ -221,7 +221,8 @@ Foco no motor (funções puras, TDD):
   vence mais; (c) um especialista (ex.: Tuco no farm) tem chance de zebra perceptível
   quando o jogo cai na sua frente, mas apanha consistentemente fora dela; (d) `overall`
   derivado = `round((kill+farm+torre)/3)`.
-- `draw`: sempre produz 7 grupos de 4, um de cada pote, sem repetição.
+- `draw`: sempre produz 7 grupos de 4 com os 28 jogadores distribuídos exatamente uma
+  vez; sorteios com seeds diferentes geram grupos diferentes (é aleatório, sem potes).
 - `groupStage`: pontuação e cadeia de desempate corretas; seleciona 16 (14 + 2 melhores 3ºs).
 - `bracket`: avanço correto das fases, disputa de 3º lugar, sem reencontro de grupo nas oitavas.
 - Determinismo: mesma seed → mesma Copa.
