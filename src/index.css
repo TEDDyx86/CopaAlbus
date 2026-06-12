@@ -1,30 +1,156 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Copa Albus Nexus — sistema visual "broadcast esports"
+   Base escura e contida; brilho só nos momentos (roll, reveal, campeão).
+   ============================================================ */
+
 @theme {
-  --color-bg: #0a0e14;
-  --color-panel: #121a26;
-  --color-panel-2: #1a2434;
-  --color-line: #243245;
-  --color-neon: #2de2e6;
-  --color-neon-2: #ff2e97;
-  --color-kill: #ff4d4d;
-  --color-farm: #ffd23f;
-  --color-torre: #5b8cff;
-  --color-lendario: #ffb300;
-  --color-epico: #b14dff;
-  --color-raro: #2d8cff;
-  --color-comum: #8aa0b3;
+  /* superfícies (elevação fria, azul-broadcast) */
+  --color-bg: oklch(0.15 0.022 256);
+  --color-bg-2: oklch(0.18 0.024 256);
+  --color-surface: oklch(0.21 0.024 256);
+  --color-surface-2: oklch(0.255 0.026 256);
+  --color-line: oklch(0.34 0.028 256);
+  --color-line-soft: oklch(0.3 0.026 256);
+
+  /* tinta */
+  --color-ink: oklch(0.97 0.008 256);
+  --color-ink-muted: oklch(0.76 0.02 256);
+  --color-ink-faint: oklch(0.6 0.022 256);
+
+  /* acentos */
+  --color-accent: oklch(0.83 0.13 199);      /* ciano broadcast */
+  --color-accent-ink: oklch(0.2 0.04 220);   /* texto sobre ciano */
+  --color-accent-2: oklch(0.72 0.19 352);    /* magenta de destaque */
+
+  /* frentes do X1 (kill/farm/torre) */
+  --color-kill: oklch(0.7 0.19 25);
+  --color-farm: oklch(0.84 0.15 86);
+  --color-torre: oklch(0.72 0.14 248);
+
+  /* raridades */
+  --color-lendario: oklch(0.84 0.15 82);
+  --color-epico: oklch(0.68 0.2 304);
+  --color-raro: oklch(0.72 0.14 244);
+  --color-comum: oklch(0.74 0.02 256);
+
+  /* tipografia */
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  /* raios */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
-@keyframes pop {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
+/* ---------- base ---------- */
 html, body, #root { height: 100%; }
+
 body {
   margin: 0;
-  background: var(--color-bg);
-  color: #e6eef7;
-  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-color: var(--color-bg);
+  /* camadas: brilho superior + halo lateral + grade de "campo" sutil */
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, oklch(0.28 0.06 235 / 0.55), transparent 60%),
+    radial-gradient(90% 60% at 100% 0%, oklch(0.3 0.09 350 / 0.18), transparent 55%),
+    linear-gradient(180deg, var(--color-bg-2), var(--color-bg) 40%);
+  background-attachment: fixed;
+}
+
+/* grade de transmissão (overlay fixo, bem sutil) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(to right, oklch(0.6 0.05 230 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.6 0.05 230 / 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(120% 90% at 50% 0%, black, transparent 75%);
+}
+
+#root { position: relative; z-index: 1; }
+
+::selection { background: var(--color-accent); color: var(--color-accent-ink); }
+
+/* números de placar com tabular para alinhar */
+.tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+/* trilho de barra de atributo */
+.statbar-track { background: oklch(0.3 0.02 256); }
+
+/* foco visível e consistente */
+:where(button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- keyframes ---------- */
+@keyframes pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes rise {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes card-in {
+  0%   { transform: perspective(1200px) rotateY(14deg) scale(0.9); opacity: 0; filter: brightness(1.6); }
+  100% { transform: perspective(1200px) rotateY(0) scale(1); opacity: 1; filter: brightness(1); }
+}
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+@keyframes sheen {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  60%, 100% { transform: translateX(320%) skewX(-18deg); }
+}
+@keyframes clash-left {
+  0%   { transform: translateX(-40px); opacity: 0; }
+  60%  { transform: translateX(6px); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes clash-right {
+  0%   { transform: translateX(40px); opacity: 0; }
+  60%  { transform: translateX(-6px); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes vs-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+@keyframes bar-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(var(--fill, 1)); }
+}
+
+/* utilidades de animação */
+.anim-rise { animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-pop { animation: pop 0.32s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-card-in { animation: card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* live dot */
+.live-dot { animation: dot-pulse 1.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

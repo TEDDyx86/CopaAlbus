@@ -14,5 +14,8 @@ npm-debug.log*
 .vscode/
 .idea/
 
+# Screenshots de revisão visual
+.shots/
+
 # Claude local settings
 .claude/settings.local.json
