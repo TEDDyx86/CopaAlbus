@@ -6,14 +6,16 @@
 ## Resumo
 
 Simulador no estilo "7-0 da Copa do Mundo", mas de **X1 (1v1) de League of Legends**
-entre os 28 membros do grupo **Albus Nexus**. O jogador escolhe um *fighter* para
-acompanhar, vê a jornada dele rodada a rodada com suspense, e pode espiar todos os
-outros confrontos. Vence a Copa quem chega à final e levanta a taça.
+entre os 28 membros do grupo **Albus Nexus**. A cada nova Copa o jogo **sorteia** um
+*fighter* para o jogador (estilo gacha, com craques raros e 2 rerolls); ele acompanha a
+jornada desse fighter rodada a rodada com suspense, e pode espiar os outros confrontos.
+Vence a Copa quem chega à final e levanta a taça.
 
 ## Objetivos e não-objetivos
 
 **Objetivos**
-- Recriar a sensação do "7-0": escolher um, torcer, avançar rodada a rodada.
+- Recriar a sensação do "7-0": ter um fighter, torcer, avançar rodada a rodada.
+- Emoção de "roll": o fighter é sorteado (craque é raro), com 2 rerolls de empurra-a-sorte.
 - Resultados imprevisíveis mas plausíveis — favorito ganha mais, zebra é possível.
 - Sabor de X1 de LoL: a vitória sai por **farm**, **kill** ou **torre**.
 - Rodar 100% no navegador, publicável no GitHub Pages.
@@ -71,6 +73,38 @@ perfil que pode aprontar uma zebra se o X1 virar maratona de CS. Tudo ajustável
 Cada jogador no código:
 `{ id: string (slug), name: string, kill: number, farm: number, torre: number }`.
 O `overall` é calculado: `round((kill + farm + torre) / 3)`.
+
+## Sorteio do fighter (roll estilo gacha)
+
+A cada nova Copa o jogador **não escolhe à vontade**: o jogo **sorteia** o fighter, com
+craques (overall alto) mais raros. Visual estilo gacha, com tiers de raridade.
+
+### Tiers de raridade
+
+Definidos por faixa de overall, cada tier com uma chance de drop; dentro do tier o
+sorteio é uniforme. (Faixas e taxas **ajustáveis**.)
+
+| Tier | Faixa de OVR | Chance | Jogadores |
+|------|--------------|--------|-----------|
+| ⭐ Lendário | 95+ | 4% | Boelitz, Gilmar (2) |
+| 🟣 Épico | 88–94 | 16% | Jon, Leozão, Osni, Ana Bueno, Grein, Giovani (6) |
+| 🔵 Raro | 82–87 | 35% | Teddy, Bruno, Kaminski, Leo Magro, Jackson, Luis020, Pedro Rush, Badasento, Marquinho (9) |
+| ⚪ Comum | < 82 | 45% | Jonata, Le3, Victor Vbabao, Vanzela, Jao, Thiago, Bato, Daniel, Yan, Augusto, Tuco (11) |
+
+Por jogador isso dá ~2% (cada lendário) → ~4% (cada comum): quanto maior o overall,
+mais raro. Roll = sorteia o tier pela chance, depois um jogador uniforme dentro dele.
+
+### Rerolls (empurra a sorte)
+
+- O primeiro fighter é sorteado automaticamente ao iniciar a Copa, com **revelação de
+  raridade** (flash dourado pra Lendário etc.).
+- O jogador tem **2 rerolls**. Cada reroll **troca** o fighter atual por um novo sorteio
+  (excluindo o atual, então sempre vem alguém diferente) e gasta um reroll.
+- Pode **parar e ficar** com o fighter a qualquer momento (bancar um bom roll cedo).
+- Esgotados os 2 rerolls, fica **obrigatoriamente com o último** sorteado — é o risco de
+  empurrar a sorte longe demais.
+
+A função de roll é pura: `roll(rng, excludeId?) → { fighter, tier }`.
 
 ## Motor de simulação
 
@@ -159,7 +193,10 @@ baixo/negativo = sufoco/zebra) — usado só para narrativa/UI.
 ## Fluxo de telas
 
 1. **Capa** — título "Copa Albus Nexus", botão *Nova Copa* e **Hall da Fama** dos campeões anteriores.
-2. **Escolha seu fighter** — grid dos 28 com nome e overall; seleciona um.
+2. **Sorteio do seu fighter (roll)** — o jogo sorteia um fighter com revelação de
+   raridade (tier + cor/flash). Mostra "rerolls restantes: 2", com botões *Rerolar* e
+   *Ficar com [Jogador]*. Cada reroll troca por um novo sorteio; sem rerolls, só resta
+   ficar com o último.
 3. **Sorteio dos grupos** — revelação animada dos 7 grupos.
 4. **Hub do torneio** — fase/rodada atual em destaque, com o seu fighter no centro;
    tabelas dos grupos; botão *jogar próxima rodada*; aba "ver todos os confrontos".
@@ -189,6 +226,7 @@ Módulos isolados, com fronteiras claras e testáveis:
 |--------|------------------|------------|
 | `data/players.ts` | Elenco fixo (gerado do .txt) | — |
 | `engine/rng.ts` | PRNG com seed (mulberry32) | — |
+| `engine/fighterRoll.ts` | Roll do fighter por tier de raridade (puro: rng + excludeId) | rng, players |
 | `engine/simMatch.ts` | Função pura: 2 jogadores + rng → resultado da partida | rng |
 | `engine/draw.ts` | Sorteio: elenco + rng → 7 grupos | rng |
 | `engine/groupStage.ts` | Tabelas, desempates, 16 classificados | simMatch |
@@ -198,12 +236,13 @@ Módulos isolados, com fronteiras claras e testáveis:
 | `components/` | As 7 telas e UI compartilhada | store |
 
 **Máquina de estados (fases):**
-`HOME → SELECT_FIGHTER → DRAW → GROUP_STAGE → R16 → QF → SF → BRONZE → FINAL → CHAMPION`
+`HOME → ROLL_FIGHTER → DRAW → GROUP_STAGE → R16 → QF → SF → BRONZE → FINAL → CHAMPION`
+(em `ROLL_FIGHTER` o estado guarda o fighter atual e quantos rerolls restam.)
 
 **Persistência (localStorage):**
 - Estado da Copa atual + seed do PRNG, sob uma chave (sobrevive ao F5).
 - *Nova Copa* limpa a run atual, mas **preserva o Hall da Fama**.
-- Hall da Fama: lista de `{ champion, date, fighterEscolhido, seed }`.
+- Hall da Fama: lista de `{ champion, date, fighter, tier, seed }`.
 
 ## Tratamento de erros / casos de borda
 
@@ -216,6 +255,9 @@ Módulos isolados, com fronteiras claras e testáveis:
 ## Testes (Vitest)
 
 Foco no motor (funções puras, TDD):
+- `fighterRoll`: ao longo de N rolls a frequência por tier bate com as chances definidas;
+  craque (overall alto) cai bem menos que comum; reroll com `excludeId` nunca devolve o
+  fighter atual.
 - `simMatch`: ao longo de N execuções — (a) a frente decidida tende às frentes onde os
   jogadores são fortes (passo 1); (b) na frente decidida, o mais forte naquele atributo
   vence mais; (c) um especialista (ex.: Tuco no farm) tem chance de zebra perceptível
