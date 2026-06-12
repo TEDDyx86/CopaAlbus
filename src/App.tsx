@@ -1,6 +1,8 @@
 import { useGame } from './store/GameProvider';
 import { HomeScreen } from './components/screens/HomeScreen';
 import { RollFighterScreen } from './components/screens/RollFighterScreen';
+import { DrawScreen } from './components/screens/DrawScreen';
+import { TournamentHub } from './components/screens/TournamentHub';
 
 export function App() {
   const { game } = useGame();
@@ -11,9 +13,9 @@ export function App() {
     case 'ROLL_FIGHTER':
       return <RollFighterScreen />;
     case 'DRAW':
-      return <Placeholder phase="DRAW" />;
+      return <DrawScreen />;
     case 'GROUP_STAGE':
-      return <Placeholder phase="GROUP_STAGE" />;
+      return <TournamentHub />;
     case 'CHAMPION':
       return <Placeholder phase="CHAMPION" />;
     default:
