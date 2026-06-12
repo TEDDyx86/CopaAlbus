@@ -21,97 +21,109 @@ outros confrontos. Vence a Copa quem chega à final e levanta a taça.
 **Não-objetivos (YAGNI)**
 - Sem backend, contas ou multiplayer online. É single-player local.
 - Sem integração com a API da Riot / dados reais de partidas.
-- Sem editor de elenco na v1 (o elenco vem fixo de `data/players.ts`).
+- Sem editor de elenco dentro do app na v1 — os atributos ficam num arquivo de dados
+  editável (`data/players.ts`) que o usuário ajusta na mão quando quiser.
 
 ## Elenco
 
-Fonte: `OVERALL ALBUS.txt`. 28 jogadores, cada um com um overall fixo.
+Fonte: `OVERALL ALBUS.txt`. 28 jogadores. Cada jogador tem **três atributos de X1** —
+`kill` (first blood), `farm` (CS / 100 de farm) e `torre` (primeira torre) — e o
+**overall é derivado** (= média dos três, arredondada). Os atributos iniciais foram
+gerados de modo que a média bata com o overall que o grupo já definiu, com uma leve
+especialização por jogador. **Todos são editáveis** em `data/players.ts`.
 
 Ordenados por overall (define os potes do sorteio):
 
-| # | Jogador | OVR | Pote |
-|---|---------|-----|------|
-| 1 | Boelitz | 99 | 1 |
-| 2 | Gilmar | 95 | 1 |
-| 3 | Jon | 91 | 1 |
-| 4 | Leozão | 90 | 1 |
-| 5 | Osni | 90 | 1 |
-| 6 | Ana Bueno | 89 | 1 |
-| 7 | Grein | 88 | 1 |
-| 8 | Giovani | 88 | 2 |
-| 9 | Teddy | 87 | 2 |
-| 10 | Bruno | 87 | 2 |
-| 11 | Kaminski | 86 | 2 |
-| 12 | Leo Magro | 86 | 2 |
-| 13 | Jackson | 85 | 2 |
-| 14 | Luis020 | 83 | 2 |
-| 15 | Pedro Rush | 83 | 3 |
-| 16 | Badasento | 82 | 3 |
-| 17 | Marquinho | 82 | 3 |
-| 18 | Jonata | 81 | 3 |
-| 19 | Le3 | 80 | 3 |
-| 20 | Victor Vbabao | 80 | 3 |
-| 21 | Vanzela | 80 | 3 |
-| 22 | Jao | 79 | 4 |
-| 23 | Thiago | 79 | 4 |
-| 24 | Bato | 78 | 4 |
-| 25 | Daniel | 77 | 4 |
-| 26 | Yan | 77 | 4 |
-| 27 | Augusto | 76 | 4 |
-| 28 | Tuco | 60 | 4 |
+| # | Jogador | Kill | Farm | Torre | OVR | Pote |
+|---|---------|------|------|-------|-----|------|
+| 1 | Boelitz | 99 | 99 | 99 | 99 | 1 |
+| 2 | Gilmar | 98 | 94 | 93 | 95 | 1 |
+| 3 | Jon | 89 | 90 | 94 | 91 | 1 |
+| 4 | Leozão | 94 | 89 | 87 | 90 | 1 |
+| 5 | Osni | 88 | 94 | 88 | 90 | 1 |
+| 6 | Ana Bueno | 87 | 88 | 92 | 89 | 1 |
+| 7 | Grein | 92 | 87 | 85 | 88 | 1 |
+| 8 | Giovani | 86 | 92 | 86 | 88 | 2 |
+| 9 | Teddy | 85 | 86 | 90 | 87 | 2 |
+| 10 | Bruno | 91 | 86 | 84 | 87 | 2 |
+| 11 | Kaminski | 84 | 90 | 84 | 86 | 2 |
+| 12 | Leo Magro | 84 | 85 | 89 | 86 | 2 |
+| 13 | Jackson | 89 | 84 | 82 | 85 | 2 |
+| 14 | Luis020 | 81 | 87 | 81 | 83 | 2 |
+| 15 | Pedro Rush | 88 | 81 | 80 | 83 | 3 |
+| 16 | Badasento | 80 | 81 | 85 | 82 | 3 |
+| 17 | Marquinho | 80 | 86 | 80 | 82 | 3 |
+| 18 | Jonata | 85 | 80 | 78 | 81 | 3 |
+| 19 | Le3 | 78 | 79 | 83 | 80 | 3 |
+| 20 | Victor Vbabao | 78 | 84 | 78 | 80 | 3 |
+| 21 | Vanzela | 84 | 79 | 77 | 80 | 3 |
+| 22 | Jao | 77 | 78 | 82 | 79 | 4 |
+| 23 | Thiago | 77 | 83 | 77 | 79 | 4 |
+| 24 | Bato | 82 | 77 | 75 | 78 | 4 |
+| 25 | Daniel | 75 | 76 | 80 | 77 | 4 |
+| 26 | Yan | 75 | 81 | 75 | 77 | 4 |
+| 27 | Augusto | 80 | 75 | 73 | 76 | 4 |
+| 28 | Tuco | 52 | 76 | 52 | 60 | 4 |
 
-Cada jogador no código: `{ id: string (slug), name: string, overall: number }`.
+(Tuco nasce "rato de farm": fraco no geral, mas com um farm respeitável — o tipo de
+perfil que pode aprontar uma zebra se o X1 virar maratona de CS. Tudo ajustável.)
+
+Cada jogador no código:
+`{ id: string (slug), name: string, kill: number, farm: number, torre: number }`.
+O `overall` é calculado: `round((kill + farm + torre) / 3)`.
 
 ## Motor de simulação
 
 Tudo determinístico a partir de um **PRNG com seed** (ex.: `mulberry32`), para que a
 Copa seja reproduzível e salvável. A seed é gerada ao criar a Copa e guardada no estado.
 
-### Quem ganha o X1
+A partida é resolvida em **dois passos**: primeiro escolhe-se a *frente* onde o X1 se
+decide (que vira a forma da vitória), depois quem vence **naquela frente**. São os três
+atributos que decidem tudo — o overall só serve pra potes/seeding/exibição.
 
-Por partida, cada jogador recebe uma **forma do dia** (ruído aleatório):
+### Passo 1 — Em qual frente o X1 se decide (kill / farm / torre)
 
-```
-form = (rng() * 2 - 1) * FORM_AMPLITUDE      // uniforme em [-FORM_AMPLITUDE, +FORM_AMPLITUDE]
-effA = overallA + formA
-effB = overallB + formB
-```
-
-Probabilidade logística (estilo Elo):
+A partida pende para a frente onde **algum dos dois jogadores é mais forte** — é o que
+permite a um especialista arrastar o jogo para o terreno dele (motor da zebra):
 
 ```
+peso_d = max(A.stat_d, B.stat_d) ^ PULL        // d ∈ {kill, farm, torre}
+```
+
+Sorteia a frente `d` com probabilidade proporcional a `peso_d`. O expoente `PULL`
+controla o quanto a frente mais forte domina o sorteio. A frente sorteada é a
+**forma da vitória** (`winType`).
+
+### Passo 2 — Quem vence naquela frente
+
+Cada jogador recebe uma **forma do dia** (ruído aleatório) e disputa com o atributo
+*daquela frente*:
+
+```
+form = (rng() * 2 - 1) * FORM_AMPLITUDE        // uniforme em [-FORM_AMPLITUDE, +FORM_AMPLITUDE]
+effA = A.stat_d + formA
+effB = B.stat_d + formB
 P(A vence) = 1 / (1 + 10 ^ ((effB - effA) / SCALE))
 ```
 
 Sorteia `rng() < P(A)` para decidir o vencedor.
 
 **Constantes padrão (ajustáveis na implementação via TDD):**
-- `SCALE = 18` → overalls iguais = 50%; +10 de vantagem ≈ 75%.
-- `FORM_AMPLITUDE = 6` → dá imprevisibilidade sem quebrar a lógica.
+- `PULL = 4` → frentes onde alguém é forte dominam o sorteio, mas a frente fraca não é impossível.
+- `SCALE = 10` → na frente, atributos iguais = 50%; +10 ≈ 76%. Menor que antes porque os
+  atributos numa mesma frente ficam mais próximos e a especialização precisa pesar.
+- `FORM_AMPLITUDE = 6` → dá o "dia inspirado/dia ruim" e abre a fresta da zebra.
 
-Efeito: Boelitz (99) vs Tuco (60) → Boelitz vence ~99% das vezes, mas sobra um
-fiozinho de chance pro milagre. A "forma do dia" pode ser exibida na UI
-("Tuco está inspirado! +5").
-
-### Como ganha (farm / kill / torre)
-
-Definido o vencedor, sorteia-se a **forma da vitória**, temperada pela margem:
-
-```
-decisiveness = effVencedor - effPerdedor      // alto = atropelo; baixo/negativo = sufoco/zebra
-d = clamp(decisiveness, -20, 20)
-
-peso_kill  = 1 + max(0,  d) / 10
-peso_torre = 1 + max(0,  d) / 10
-peso_farm  = 1.5 + max(0, -d) / 10
-```
-
-Normaliza os pesos e sorteia. Resultado: atropelo tende a **kill** (first blood) ou
-**torre**; jogo apertado tende a **farm** (foi até os 100 de CS no sufoco). Isso gera a
-narrativa de cada confronto.
+**Efeito da zebra:** um confronto Tuco (kill 52 / **farm 76** / torre 52) vs um overall
+maior porém menos especializado em farm tende, com frequência, a cair na frente do
+**farm** (porque o farm 76 do Tuco puxa o jogo pra lá). Nessa frente específica a
+diferença encolhe e a "forma do dia" pode coroar o azarão. Já contra alguém com farm
+alto, o Tuco apanha igual. É a especialização, não a sorte pura, que cria a zebra.
 
 A partida resolvida retorna:
-`{ winnerId, loserId, winType: 'farm' | 'kill' | 'torre', decisiveness, formWinner, formLoser }`.
+`{ winnerId, loserId, winType: 'kill' | 'farm' | 'torre', decisiveness, formWinner, formLoser }`,
+onde `decisiveness = effVencedor − effPerdedor` na frente decidida (alto = atropelo,
+baixo/negativo = sufoco/zebra) — usado só para narrativa/UI.
 
 ## Estrutura do torneio
 
@@ -204,9 +216,11 @@ Módulos isolados, com fronteiras claras e testáveis:
 ## Testes (Vitest)
 
 Foco no motor (funções puras, TDD):
-- `simMatch`: ao longo de N execuções, frequência de vitória bate com a probabilidade
-  esperada; favorito ganha mais; zebra acontece raramente; win-type respeita os pesos
-  por margem.
+- `simMatch`: ao longo de N execuções — (a) a frente decidida tende às frentes onde os
+  jogadores são fortes (passo 1); (b) na frente decidida, o mais forte naquele atributo
+  vence mais; (c) um especialista (ex.: Tuco no farm) tem chance de zebra perceptível
+  quando o jogo cai na sua frente, mas apanha consistentemente fora dela; (d) `overall`
+  derivado = `round((kill+farm+torre)/3)`.
 - `draw`: sempre produz 7 grupos de 4, um de cada pote, sem repetição.
 - `groupStage`: pontuação e cadeia de desempate corretas; seleciona 16 (14 + 2 melhores 3ºs).
 - `bracket`: avanço correto das fases, disputa de 3º lugar, sem reencontro de grupo nas oitavas.
