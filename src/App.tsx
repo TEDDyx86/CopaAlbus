@@ -1,5 +1,6 @@
 import { useGame } from './store/GameProvider';
 import { HomeScreen } from './components/screens/HomeScreen';
+import { RollFighterScreen } from './components/screens/RollFighterScreen';
 
 export function App() {
   const { game } = useGame();
@@ -8,7 +9,7 @@ export function App() {
 
   switch (game.phase) {
     case 'ROLL_FIGHTER':
-      return <Placeholder phase="ROLL_FIGHTER" />;
+      return <RollFighterScreen />;
     case 'DRAW':
       return <Placeholder phase="DRAW" />;
     case 'GROUP_STAGE':

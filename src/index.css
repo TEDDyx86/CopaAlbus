@@ -16,6 +16,11 @@
   --color-comum: #8aa0b3;
 }
 
+@keyframes pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 html, body, #root { height: 100%; }
 body {
   margin: 0;
