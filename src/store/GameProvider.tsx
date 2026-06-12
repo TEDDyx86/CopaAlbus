@@ -1,57 +1,64 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { byId } from '../data/players';
 import {
-  createGame, reroll as rerollFn, keepFighter, confirmDraw,
-  playGroupRound, playKnockoutRound, type GameState,
-} from '../engine/tournament';
+  createRun, reroll as rerollFn, keepFighter,
+  playGroupGame as playGroupGameFn, playSeriesGame as playSeriesGameFn, advance as advanceFn,
+  reachedLabel, type RunState,
+} from '../engine/run';
 import { loadGame, saveGame, loadHall, saveHall, type HallEntry } from './persistence';
 
 interface GameCtx {
-  game: GameState | null;
+  game: RunState | null;
   hall: HallEntry[];
   newGame(): void;
   reroll(): void;
   keep(): void;
-  confirmDraw(): void;
-  playGroupRound(): void;
-  playKnockout(): void;
+  playGroupGame(): void;
+  playSeriesGame(): void;
+  advance(): void;
   goHome(): void;
 }
 
 const Ctx = createContext<GameCtx | null>(null);
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [game, setGame] = useState<GameState | null>(() => loadGame());
+  const [game, setGame] = useState<RunState | null>(() => loadGame());
   const [hall, setHall] = useState<HallEntry[]>(() => loadHall());
   const recordedSeed = useRef<number | null>(null);
 
   useEffect(() => { saveGame(game); }, [game]);
   useEffect(() => { saveHall(hall); }, [hall]);
 
-  // Registra o campeão no Hall da Fama uma única vez (seguro sob StrictMode).
+  // Registra a campanha encerrada (campeão ou eliminado) uma única vez por seed.
   useEffect(() => {
-    if (game?.phase !== 'CHAMPION' || !game.championId) return;
+    if (!game || (game.phase !== 'CHAMPION' && game.phase !== 'ELIMINATED')) return;
     if (recordedSeed.current === game.seed) return;
     recordedSeed.current = game.seed;
-    const championId = game.championId;
+    const snapshot = game;
     setHall((h) => {
-      if (h.some((e) => e.seed === game.seed)) return h;
-      return [
-        { champion: byId[championId].name, fighterId: game.fighterId, tier: game.fighterTier, date: new Date().toISOString(), seed: game.seed },
-        ...h,
-      ];
+      if (h.some((e) => e.seed === snapshot.seed)) return h;
+      const entry: HallEntry = {
+        fighter: byId[snapshot.fighterId].name,
+        fighterId: snapshot.fighterId,
+        tier: snapshot.fighterTier,
+        result: snapshot.phase === 'CHAMPION' ? 'CHAMPION' : snapshot.phase,
+        reached: reachedLabel(snapshot),
+        date: new Date().toISOString(),
+        seed: snapshot.seed,
+      };
+      return [entry, ...h];
     });
-  }, [game?.phase, game?.championId, game?.seed, game?.fighterId, game?.fighterTier]);
+  }, [game?.phase, game?.seed, game?.fighterId, game?.fighterTier, game?.eliminatedAt]);
 
   const api = useMemo<GameCtx>(() => ({
     game,
     hall,
-    newGame: () => { recordedSeed.current = null; setGame(createGame()); },
+    newGame: () => { recordedSeed.current = null; setGame(createRun()); },
     reroll: () => setGame((g) => (g ? rerollFn(g) : g)),
     keep: () => setGame((g) => (g ? keepFighter(g) : g)),
-    confirmDraw: () => setGame((g) => (g ? confirmDraw(g) : g)),
-    playGroupRound: () => setGame((g) => (g ? playGroupRound(g) : g)),
-    playKnockout: () => setGame((g) => (g ? playKnockoutRound(g) : g)),
+    playGroupGame: () => setGame((g) => (g ? playGroupGameFn(g) : g)),
+    playSeriesGame: () => setGame((g) => (g ? playSeriesGameFn(g) : g)),
+    advance: () => setGame((g) => (g ? advanceFn(g) : g)),
     goHome: () => setGame(null),
   }), [game, hall]);
 

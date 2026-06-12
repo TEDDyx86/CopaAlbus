@@ -1,14 +1,16 @@
-import type { GameState } from '../engine/tournament';
+import type { RunPhase, RunState } from '../engine/run';
 import type { Tier } from '../types';
 
-const GAME_KEY = 'copa-albus-nexus:game:v1';
-const HALL_KEY = 'copa-albus-nexus:hall:v1';
+const GAME_KEY = 'copa-albus-nexus:run:v2';
+const HALL_KEY = 'copa-albus-nexus:hall:v2';
 
 export interface HallEntry {
-  champion: string;   // nome
-  fighterId: string;  // fighter que o jogador levou
+  fighter: string;                 // nome do fighter que você levou
+  fighterId: string;
   tier: Tier;
-  date: string;       // ISO
+  result: 'CHAMPION' | RunPhase;   // CHAMPION ou a fase em que a run terminou
+  reached: string;                 // rótulo legível ("Campeão", "Quartas de final"…)
+  date: string;                    // ISO
   seed: number;
 }
 
@@ -21,16 +23,16 @@ function safeParse<T>(raw: string | null): T | null {
   }
 }
 
-export function loadGame(): GameState | null {
+export function loadGame(): RunState | null {
   try {
-    const g = safeParse<GameState>(localStorage.getItem(GAME_KEY));
-    return g && g.version === 1 ? g : null;
+    const g = safeParse<RunState>(localStorage.getItem(GAME_KEY));
+    return g && g.version === 2 ? g : null;
   } catch {
     return null;
   }
 }
 
-export function saveGame(s: GameState | null): void {
+export function saveGame(s: RunState | null): void {
   try {
     if (s) localStorage.setItem(GAME_KEY, JSON.stringify(s));
     else localStorage.removeItem(GAME_KEY);

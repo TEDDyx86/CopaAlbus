@@ -1,10 +1,10 @@
 import { useGame } from './store/GameProvider';
 import { HomeScreen } from './components/screens/HomeScreen';
 import { RollFighterScreen } from './components/screens/RollFighterScreen';
-import { DrawScreen } from './components/screens/DrawScreen';
-import { TournamentHub } from './components/screens/TournamentHub';
-import { BracketScreen } from './components/screens/BracketScreen';
+import { GroupRunScreen } from './components/screens/GroupRunScreen';
+import { SeriesScreen } from './components/screens/SeriesScreen';
 import { ChampionScreen } from './components/screens/ChampionScreen';
+import { EliminatedScreen } from './components/screens/EliminatedScreen';
 
 export function App() {
   const { game } = useGame();
@@ -12,33 +12,18 @@ export function App() {
   if (!game) return <HomeScreen />;
 
   switch (game.phase) {
-    case 'ROLL_FIGHTER':
+    case 'ROLL':
       return <RollFighterScreen />;
-    case 'DRAW':
-      return <DrawScreen />;
-    case 'GROUP_STAGE':
-      return <TournamentHub />;
+    case 'GROUPS':
+      return <GroupRunScreen />;
     case 'R16':
     case 'QF':
     case 'SF':
-    case 'BRONZE':
     case 'FINAL':
-      return <BracketScreen />;
+      return <SeriesScreen />;
     case 'CHAMPION':
       return <ChampionScreen />;
-    default:
-      return <Placeholder phase={game.phase} />;
+    case 'ELIMINATED':
+      return <EliminatedScreen />;
   }
-}
-
-function Placeholder({ phase }: { phase: string }) {
-  const { goHome } = useGame();
-  return (
-    <div className="grid min-h-full place-items-center gap-4">
-      <p className="text-white/60">Tela "{phase}" em construção…</p>
-      <button onClick={goHome} className="rounded bg-panel-2 px-4 py-2 text-sm ring-1 ring-line">
-        ← Voltar à capa
-      </button>
-    </div>
-  );
 }

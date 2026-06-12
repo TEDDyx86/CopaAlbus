@@ -1,19 +1,7 @@
 import { byId } from '../../data/players';
 import { useGame } from '../../store/GameProvider';
-import type { Phase } from '../../engine/tournament';
+import { PHASE_TITLE } from '../../engine/run';
 import { Brand } from './Brand';
-
-const PHASE_LABEL: Record<Phase, string> = {
-  ROLL_FIGHTER: 'Sorteio do fighter',
-  DRAW: 'Sorteio dos grupos',
-  GROUP_STAGE: 'Fase de grupos',
-  R16: 'Oitavas',
-  QF: 'Quartas',
-  SF: 'Semifinal',
-  BRONZE: 'Disputa de 3º',
-  FINAL: 'Final',
-  CHAMPION: 'Campeão',
-};
 
 export function TopBar() {
   const { game, goHome } = useGame();
@@ -33,7 +21,7 @@ export function TopBar() {
             Ao vivo
           </span>
           <span className="rounded-full bg-surface/70 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink ring-1 ring-line">
-            {PHASE_LABEL[game.phase]}
+            {PHASE_TITLE[game.phase]}
           </span>
           {fighter && (
             <span className="flex items-center gap-1.5 rounded-full bg-accent/12 px-3 py-1 text-xs font-bold text-accent ring-1 ring-accent/40">

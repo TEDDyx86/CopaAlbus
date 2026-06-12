@@ -37,17 +37,19 @@ Cor nunca é o único sinal: frentes e vencedor têm sempre ícone/rótulo.
   moldura/brilho por raridade. Props: `size` (sm/md/lg), `glow`, `won`, `dimmed`, `animate`.
 - `StatBars` — medidores kill/farm/torre com cor da frente e preenchimento animado.
 - `TierBadge` / `WinTypeTag` — pílulas de raridade e de forma da vitória.
-- `GroupTable` — placar do grupo (classificados em destaque, "você" marcado).
+- `CampaignRoad` — trilha da campanha (Grupos · Oitavas · Quartas · Semi · Final) marcando
+  fase atual, fases vencidas e onde a run terminou.
 - `Brand` / `TopBar` — marca e barra HUD de transmissão (ao vivo + fase + fighter).
 
 ## Motion
 
 - Transições de UI 150–250 ms; curvas ease-out (`cubic-bezier(0.16,1,0.3,1)`), sem bounce.
-- Reveal/celebração são exceções com mais teatro: `card-in`, `clash`, `vs-pulse`, sheen, confete.
-- Materiais premium quando ajudam: blur de fundo no modal de revelação, glow, mask.
+- Resultado de cada jogo entra inline (`card-in`/`pop`) e o placar da série sobe ao vivo;
+  título do campeão é a exceção teatral (sheen no card + confete).
+- Materiais premium quando ajudam: glow da carta em destaque, halo por raridade, mask de fundo.
 - `prefers-reduced-motion`: tudo vira quase instantâneo; confete não dispara.
 
 ## Responsivo
 
-- Estrutural, não tipográfico: grids de grupo colapsam por breakpoint; bracket com scroll
-  horizontal no mobile; o confronto da revelação empilha na vertical em telas estreitas.
+- Estrutural, não tipográfico: a trilha da campanha fica compacta no mobile; o confronto da
+  série (suas duas cartas + placar) empilha na vertical em telas estreitas.

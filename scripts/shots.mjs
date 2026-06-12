@@ -1,14 +1,16 @@
 import puppeteer from 'puppeteer-core';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const BASE = process.env.SHOT_URL || 'http://localhost:5176/7-0Albus/';
+const BASE = process.env.SHOT_URL || 'http://localhost:5176/';
 const OUT = '.shots';
+const KEY = 'copa-albus-nexus:run:v2';
 const VIEW = process.env.SHOT_MOBILE
   ? { width: 390, height: 844, deviceScaleFactor: 2 }
   : { width: 1340, height: 880, deviceScaleFactor: 2 };
 const SUFFIX = process.env.SHOT_MOBILE ? '-m' : '';
 
+const states = JSON.parse(readFileSync(`${OUT}/states.json`, 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function clickText(page, src) {
@@ -19,12 +21,19 @@ async function clickText(page, src) {
   const el = handle.asElement();
   if (!el) throw new Error('botão não encontrado: ' + src);
   await el.click();
-  await sleep(60);
+  await sleep(80);
 }
 
 async function shot(page, name) {
   await page.screenshot({ path: `${OUT}/${name}${SUFFIX}.png` });
   console.log('shot', name + SUFFIX);
+}
+
+/** injeta um RunState no localStorage e recarrega a app */
+async function load(page, state) {
+  await page.evaluate((k, s) => localStorage.setItem(k, JSON.stringify(s)), KEY, state);
+  await page.reload({ waitUntil: 'networkidle0' });
+  await sleep(400);
 }
 
 mkdirSync(OUT, { recursive: true });
@@ -36,55 +45,32 @@ const browser = await puppeteer.launch({
 });
 const page = await browser.newPage();
 await page.setViewport(VIEW);
-await page.evaluateOnNewDocument(() => localStorage.clear());
 
 await page.goto(BASE, { waitUntil: 'networkidle0' });
-await sleep(500);
+await page.evaluate(() => localStorage.clear());
+await page.reload({ waitUntil: 'networkidle0' });
+await sleep(400);
 await shot(page, '1-home');
 
-await clickText(page, 'Nova Copa');
-await sleep(500);
+await clickText(page, 'Nova campanha');
+await sleep(400);
 await shot(page, '2-roll');
 
 await clickText(page, 'Ficar com');
-await sleep(500);
-await shot(page, '3-draw');
-
-await clickText(page, 'Começar a Copa');
-await sleep(400);
-await shot(page, '4-hub');
-
-await clickText(page, 'Jogar rodada');
 await sleep(300);
-await clickText(page, 'Jogar rodada');
+await clickText(page, 'Jogar jogo'); // 1 jogo de grupo
 await sleep(300);
-await clickText(page, 'Jogar rodada'); // 3ª rodada -> R16
+await shot(page, '3-groups');
+
+await load(page, states.seriesMid);
+await shot(page, '4-series');
+
+await load(page, states.eliminated);
+await shot(page, '5-eliminated');
+
+await load(page, states.champion);
 await sleep(500);
-await shot(page, '5-bracket-empty');
-
-await clickText(page, 'Jogar Oitavas'); // resolve R16 -> QF
-await sleep(500);
-await shot(page, '6-bracket-played');
-
-// abrir reveal de um confronto resolvido das oitavas
-const opened = await page.evaluateHandle(() =>
-  [...document.querySelectorAll('button')].find((b) => /ver lance/i.test(b.textContent || '')),
-);
-const el = opened.asElement();
-if (el) {
-  await el.click();
-  await sleep(1900);
-  await shot(page, '7-reveal');
-  await clickText(page, 'Continuar');
-  await sleep(300);
-}
-
-// seguir até o campeão
-for (const label of ['Jogar Quartas', 'Jogar Semifinal', 'Jogar Disputa', 'Jogar Final']) {
-  try { await clickText(page, label); await sleep(450); } catch { /* fase pode variar */ }
-}
-await sleep(600);
-await shot(page, '8-champion');
+await shot(page, '6-champion');
 
 await browser.close();
 console.log('done');

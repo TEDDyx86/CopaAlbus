@@ -30,12 +30,12 @@ export function HomeScreen() {
         </h1>
 
         <p className="mx-auto mt-5 max-w-md text-balance text-ink-muted">
-          7 a 0, mas de X1 de LoL. O destino sorteia seu fighter entre os 28 do grupo.
-          Você só torce, sua e xinga até a final.
+          7 a 0, mas de X1 de LoL. O destino sorteia seu fighter entre os 28 do grupo e você
+          encara adversários aleatórios — 3 jogos nos grupos, MD3 no mata-mata e MD5 na final.
         </p>
 
         <div className="mt-8 flex justify-center">
-          <Button size="lg" onClick={newGame}>⚡ Nova Copa</Button>
+          <Button size="lg" onClick={newGame}>⚡ Nova campanha</Button>
         </div>
 
         {/* legenda de raridade */}
@@ -53,39 +53,47 @@ export function HomeScreen() {
         </div>
       </section>
 
-      {/* hall da fama */}
+      {/* histórico de campanhas */}
       <section className="mt-14">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-ink-muted">
-            <span aria-hidden>🏆</span> Hall da Fama
+            <span aria-hidden>📒</span> Suas campanhas
           </h2>
           {hall.length > 0 && (
-            <span className="tnum font-mono text-xs text-ink-faint">{hall.length} {hall.length === 1 ? 'copa' : 'copas'}</span>
+            <span className="tnum font-mono text-xs text-ink-faint">
+              {hall.filter((e) => e.result === 'CHAMPION').length} {'✕'} 🏆
+            </span>
           )}
         </div>
 
         {hall.length === 0 ? (
           <div className="rounded-lg border border-dashed border-line px-6 py-10 text-center text-ink-faint">
-            Ninguém levantou a taça ainda. Bora ser o primeiro?
+            Nenhuma campanha ainda. Bora levantar a primeira taça?
           </div>
         ) : (
           <ul className="flex flex-col gap-2">
-            {hall.map((e, i) => (
-              <li
-                key={`${e.seed}-${i}`}
-                className="flex items-center gap-3 rounded-md bg-surface/60 px-4 py-3 ring-1 ring-line"
-              >
-                <span className="tnum w-6 shrink-0 text-center font-mono text-sm font-black text-ink-faint">{i + 1}</span>
-                <span aria-hidden className="text-lg">{i === 0 ? '🥇' : '🏅'}</span>
-                <span className="flex-1 truncate font-bold text-ink">{e.champion}</span>
-                <span className="hidden truncate text-xs text-ink-faint sm:block">
-                  seu fighter: <span className="text-ink-muted">{byId[e.fighterId]?.name ?? e.fighterId}</span>
-                </span>
-                <span className="tnum shrink-0 font-mono text-[11px] text-ink-faint">
-                  {new Date(e.date).toLocaleDateString('pt-BR')}
-                </span>
-              </li>
-            ))}
+            {hall.map((e, i) => {
+              const champ = e.result === 'CHAMPION';
+              return (
+                <li
+                  key={`${e.seed}-${i}`}
+                  className="flex items-center gap-3 rounded-md bg-surface/60 px-4 py-3 ring-1 ring-line"
+                  style={champ ? { boxShadow: 'inset 0 0 0 1px color-mix(in oklch, var(--color-lendario) 45%, transparent)' } : undefined}
+                >
+                  <span aria-hidden className="text-lg">{champ ? '🏆' : '🎮'}</span>
+                  <span className="flex-1 truncate font-bold text-ink">{byId[e.fighterId]?.name ?? e.fighter}</span>
+                  <span
+                    className="shrink-0 text-xs font-bold uppercase tracking-wide"
+                    style={{ color: champ ? 'var(--color-lendario)' : 'var(--color-ink-faint)' }}
+                  >
+                    {e.reached}
+                  </span>
+                  <span className="tnum hidden shrink-0 font-mono text-[11px] text-ink-faint sm:block">
+                    {new Date(e.date).toLocaleDateString('pt-BR')}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

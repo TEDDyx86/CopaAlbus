@@ -14,9 +14,15 @@ sessões curtas, muitas vezes compartilhando tela ou o resultado no grupo.
 ## Product Purpose
 
 Simulador estilo "7 a 0 da Copa do Mundo" aplicado a X1 de LoL entre os 28 do Albus
-Nexus. O jogador recebe um fighter sorteado (raridade estilo gacha), acompanha a jornada
-dele da fase de grupos até a final com revelações de partida, e celebra (ou lamenta) o
-campeão. Sucesso = vontade de "rodar mais uma" e de mandar o print no grupo.
+Nexus. O jogador recebe um fighter sorteado (raridade estilo gacha) e joga **a campanha
+dele**: encara adversários sorteados aleatoriamente — 3 jogos na fase de grupos (precisa de
+2 vitórias pra classificar), depois MD3 nas oitavas/quartas/semi e MD5 na final. Cada X1 se
+decide por kill, farm ou torre. Vencer a final levanta a taça; perder qualquer série encerra
+a campanha naquela fase. Sucesso = vontade de "rodar mais uma" e de mandar o print no grupo.
+
+> Decisão de design: a simulação acompanha **apenas a run do fighter do jogador** (não o
+> torneio inteiro). Adversários são sorteio uniforme entre os outros 27 — assim nenhum
+> overall altíssimo (ex.: Boelitz 99) domina a Copa só por estar sempre no caminho.
 
 ## Brand Personality
 
