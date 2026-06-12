@@ -4,6 +4,7 @@ import { RollFighterScreen } from './components/screens/RollFighterScreen';
 import { DrawScreen } from './components/screens/DrawScreen';
 import { TournamentHub } from './components/screens/TournamentHub';
 import { BracketScreen } from './components/screens/BracketScreen';
+import { ChampionScreen } from './components/screens/ChampionScreen';
 
 export function App() {
   const { game } = useGame();
@@ -24,7 +25,7 @@ export function App() {
     case 'FINAL':
       return <BracketScreen />;
     case 'CHAMPION':
-      return <Placeholder phase="CHAMPION" />;
+      return <ChampionScreen />;
     default:
       return <Placeholder phase={game.phase} />;
   }
